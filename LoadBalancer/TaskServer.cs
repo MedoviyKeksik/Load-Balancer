@@ -10,34 +10,36 @@ namespace LoadBalancer
 {
     public class TaskServer
     {
-        private int _port = 8080;
-        private int _maxConnections = 4;
-        private int _maxAgents = 4;
-        private int _agentsPort = 7070;
-        private int _bufferSize = 1024 * 1024;
+        public int Port { get; set; }
+        public int MaxConnections { get; set; }
+        public int BufferSize { get; set; }
 
         private System.Threading.Tasks.Task _taskServerTask;
         private CancellationTokenSource _taskListenerTokenSource;
         private CancellationToken _taskListenerToken;
 
-        
         private Socket _taskListenerSocket;
         public Queue<Task> Tasks;
+        private Dictionary<Guid, Socket> PendingTasks;
         
-        public TaskServer()
+        public TaskServer(int port = 8080, int maxConnections = 4)
         {
+            Port = port;
+            MaxConnections = maxConnections;
+            BufferSize = 1024 * 1024;
             _taskListenerTokenSource = new CancellationTokenSource();
             _taskListenerToken = _taskListenerTokenSource.Token;    
             Tasks = new Queue<Task>();
+            PendingTasks = new Dictionary<Guid, Socket>();
         }
 
         private void TaskListener()
         {
             using (_taskListenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
-                _taskListenerSocket.Bind(new IPEndPoint(IPAddress.Any, _port));
-                _taskListenerSocket.Listen(_maxConnections);
-                Console.WriteLine("Server is running on port " + _port);
+                _taskListenerSocket.Bind(new IPEndPoint(IPAddress.Any, Port));
+                _taskListenerSocket.Listen(MaxConnections);
+                Console.WriteLine("Server is running on port " + Port);
                 while (!_taskListenerToken.IsCancellationRequested)
                 {
                     var connectedSocket = _taskListenerSocket.Accept();
@@ -48,22 +50,27 @@ namespace LoadBalancer
             }
         }
         
-        private byte[] GetPrefix(byte[] buffer, int count)
-        {
-            byte[] result = new byte[count];
-            Array.Copy(buffer, result, count);
-            return result;
-        }
-
         private void TaskReciever(object socket)
         {
-            byte[] buffer = new byte[_bufferSize];
-            int recieved = ((Socket) socket).Receive(buffer);
-            Console.WriteLine("Recieved: " + recieved + " bytes");
-            lock (Tasks)
+            byte[] buffer = new byte[BufferSize];
+            while (true)
             {
-                Tasks.Enqueue(JsonSerializer.Deserialize<Task>(Encoding.UTF8.GetString(GetPrefix(buffer, recieved))));
+                int recieved = ((Socket) socket).Receive(buffer);
+                Console.WriteLine("Recieved: " + recieved + " bytes");
+                Task recievedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, recieved));
+                PendingTasks.Add(recievedTask.Id, (Socket) socket);
+                lock (Tasks)
+                {
+                    Tasks.Enqueue(recievedTask);
+                }
             }
+        }
+
+        public void SendResult(Task task)
+        {
+            Socket client = PendingTasks[task.Id];
+            client.Send(JsonSerializer.SerializeToUtf8Bytes(task));
+            Console.WriteLine("Send result to " + client.RemoteEndPoint + " of " + task.Id);
         }
         public void Start()
         {

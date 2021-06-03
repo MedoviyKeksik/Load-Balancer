@@ -5,7 +5,11 @@ namespace LoadBalancer
 {
     public class Task
     {
-        public int Id {
+        public Task()
+        {
+            Id = Guid.NewGuid();
+        }
+        public Guid Id {
             get;
             set;
         }
@@ -26,12 +30,17 @@ namespace LoadBalancer
             set;
         }
 
+        public object Options
+        {
+            get;
+            set;
+        }
+        
         public object Result
         {
             get;
             set;
         }
-
     }
     public class TaskComparer : IComparer<Task>
     {
@@ -46,4 +55,13 @@ namespace LoadBalancer
         }
     }
 
+    public static class ArrayProcessing
+    {
+        public static byte[] GetPrefix(byte[] buffer, int count)
+        {
+            byte[] result = new byte[count];
+            Array.Copy(buffer, result, count);
+            return result;
+        }
+    }
 }

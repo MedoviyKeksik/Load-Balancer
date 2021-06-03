@@ -21,9 +21,9 @@ namespace LoadBalancer
     }
     public class AgentServer
     {
-        private const int _port = 7070;
-        private const int _maxAgents = 4;
-        private const int _bufferSize = 1024 * 1024;
+        public int Port { get; set; }
+        public int MaxAgents { get; set; }
+        public static int BufferSize = 1024 * 1024;
 
         private System.Threading.Tasks.Task _agentServerTask;
         private CancellationTokenSource _agentListenerTokenSource;
@@ -33,8 +33,10 @@ namespace LoadBalancer
         private Socket _agentsSocket;
         public List<Agent> Agents;
 
-        public AgentServer()
+        public AgentServer(int port = 7070, int maxAgents = 4)
         {
+            Port = port;
+            MaxAgents = maxAgents;
             _agentListenerTokenSource = new CancellationTokenSource();
             _agentListenerToken = _agentListenerTokenSource.Token;
             Agents = new List<Agent>();
@@ -44,8 +46,8 @@ namespace LoadBalancer
         {
             using (_agentsSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
-                _agentsSocket.Bind(new IPEndPoint(IPAddress.Any, _port));
-                _agentsSocket.Listen(_maxAgents);
+                _agentsSocket.Bind(new IPEndPoint(IPAddress.Any, Port));
+                _agentsSocket.Listen(MaxAgents);
                 Console.WriteLine("Server is listening for agents...");
                 while (!_agentListenerToken.IsCancellationRequested)
                 {

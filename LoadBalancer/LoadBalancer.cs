@@ -5,13 +5,15 @@ namespace LoadBalancer
 {
     public class LoadBalancer
     {
-        private const int _delay = 30;
+        public int Delay { get; set; }
+        
         private AgentServer _agentServer;
         private TaskServer _taskServer;
         private System.Threading.Tasks.Task _balanceTask;
 
         public LoadBalancer()
         {
+            Delay = 30;
             _agentServer = new AgentServer();
             _taskServer = new TaskServer();
         }
@@ -20,12 +22,12 @@ namespace LoadBalancer
             int currentId = 0;
             while (true)
             {
-                if (_taskServer.Tasks.Count > 0)
+                if (_taskServer.Tasks.Count > 0 && _agentServer.Agents.Count > 0)
                 {
                     if (currentId < _agentServer.Agents.Count) currentId = 0;
-                    _agentServer.Agents[currentId++].AddTask(_taskServer.Tasks.Dequeue());
+                    _agentServer.Agents[currentId++].AddTask(_taskServer.Tasks.Dequeue(), task => _taskServer.SendResult(task));
                 }
-                else Thread.Sleep(_delay);
+                else Thread.Sleep(Delay);
             }
         }
 

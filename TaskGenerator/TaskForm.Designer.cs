@@ -31,26 +31,28 @@ namespace TaskGenerator
         /// </summary>
         private void InitializeComponent()
         {
-            this.NameTextBox = new System.Windows.Forms.TextBox();
-            this.LabelTaskName = new System.Windows.Forms.Label();
+            this.CommandTextBox = new System.Windows.Forms.TextBox();
+            this.LabelCommand = new System.Windows.Forms.Label();
             this.OkButton = new System.Windows.Forms.Button();
             this.CancelButton = new System.Windows.Forms.Button();
+            this.LabelArguments = new System.Windows.Forms.Label();
+            this.ArgumentsTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // NameTextBox
+            // CommandTextBox
             // 
-            this.NameTextBox.Location = new System.Drawing.Point(12, 33);
-            this.NameTextBox.Name = "NameTextBox";
-            this.NameTextBox.Size = new System.Drawing.Size(214, 20);
-            this.NameTextBox.TabIndex = 0;
+            this.CommandTextBox.Location = new System.Drawing.Point(12, 33);
+            this.CommandTextBox.Name = "CommandTextBox";
+            this.CommandTextBox.Size = new System.Drawing.Size(209, 20);
+            this.CommandTextBox.TabIndex = 0;
             // 
-            // LabelTaskName
+            // LabelCommand
             // 
-            this.LabelTaskName.Location = new System.Drawing.Point(12, 9);
-            this.LabelTaskName.Name = "LabelTaskName";
-            this.LabelTaskName.Size = new System.Drawing.Size(100, 21);
-            this.LabelTaskName.TabIndex = 1;
-            this.LabelTaskName.Text = "Name";
+            this.LabelCommand.Location = new System.Drawing.Point(12, 9);
+            this.LabelCommand.Name = "LabelCommand";
+            this.LabelCommand.Size = new System.Drawing.Size(100, 21);
+            this.LabelCommand.TabIndex = 1;
+            this.LabelCommand.Text = "Command:";
             // 
             // OkButton
             // 
@@ -72,26 +74,47 @@ namespace TaskGenerator
             this.CancelButton.UseVisualStyleBackColor = true;
             this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
+            // LabelArguments
+            // 
+            this.LabelArguments.Location = new System.Drawing.Point(15, 71);
+            this.LabelArguments.Name = "LabelArguments";
+            this.LabelArguments.Size = new System.Drawing.Size(100, 23);
+            this.LabelArguments.TabIndex = 4;
+            this.LabelArguments.Text = "Arguments:";
+            // 
+            // ArgumentsTextBox
+            // 
+            this.ArgumentsTextBox.Location = new System.Drawing.Point(12, 97);
+            this.ArgumentsTextBox.Name = "ArgumentsTextBox";
+            this.ArgumentsTextBox.Size = new System.Drawing.Size(209, 20);
+            this.ArgumentsTextBox.TabIndex = 5;
+            // 
             // TaskForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(245, 368);
+            this.ClientSize = new System.Drawing.Size(233, 370);
+            this.Controls.Add(this.ArgumentsTextBox);
+            this.Controls.Add(this.LabelArguments);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.OkButton);
-            this.Controls.Add(this.LabelTaskName);
-            this.Controls.Add(this.NameTextBox);
+            this.Controls.Add(this.LabelCommand);
+            this.Controls.Add(this.CommandTextBox);
             this.Name = "TaskForm";
             this.Text = "TaskForm";
             this.ResumeLayout(false);
             this.PerformLayout();
         }
 
+        private System.Windows.Forms.TextBox ArgumentsTextBox;
+
+        private System.Windows.Forms.Label LabelArguments;
+
         private new System.Windows.Forms.Button CancelButton;
-        private System.Windows.Forms.Label LabelTaskName;
+        private System.Windows.Forms.Label LabelCommand;
         private System.Windows.Forms.Button OkButton;
 
-        private System.Windows.Forms.TextBox NameTextBox;
+        private System.Windows.Forms.TextBox CommandTextBox;
 
         #endregion
     }
