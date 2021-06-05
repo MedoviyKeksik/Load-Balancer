@@ -56,8 +56,8 @@ namespace LoadBalancer
             while (true)
             {
                 int recieved = ((Socket) socket).Receive(buffer);
-                Console.WriteLine("Recieved: " + recieved + " bytes");
                 Task recievedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, recieved));
+                Console.WriteLine("Recieved task: " + recievedTask.Id);
                 PendingTasks.Add(recievedTask.Id, (Socket) socket);
                 lock (Tasks)
                 {

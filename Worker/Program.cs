@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using LoadBalancer;
 
 namespace Worker
 {
@@ -8,8 +9,7 @@ namespace Worker
         static void Main(string[] args)
         {
             Worker worker = new Worker(IPEndPoint.Parse(args[0]));
-
-        worker.Run(task => null);
+            worker.Run(task => null);
         }
     }
 }

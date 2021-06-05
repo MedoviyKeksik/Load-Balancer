@@ -48,7 +48,7 @@ namespace Worker
                 {
                     LoadBalancer.Task currentTask = queue.Min;
                     queue.Remove(currentTask);
-                    currentTask.Result = callbackFunction(currentTask);
+                    TaskProcesser.ProcessTask(ref currentTask);
                     Console.WriteLine("Send result: " + currentTask.Id);
                     lock (_connectionSocket)
                     {

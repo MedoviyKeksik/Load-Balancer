@@ -16,6 +16,8 @@ namespace TaskGenerator
         private void OkButton_Click(object sender, EventArgs e)
         {
             Task = new Task();
+            Task.Command = CommandTextBox.Text;
+            Task.Arguments = ArgumentsTextBox.Text;
             DialogResult = DialogResult.OK;
             Close();
         }

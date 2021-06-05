@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\LoadBalancer\LoadBalancer.csproj" />
+      <ProjectReference Include="..\TaskGenerator\TaskGenerator.csproj" />
     </ItemGroup>
 
 </Project>

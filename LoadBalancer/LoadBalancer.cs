@@ -24,7 +24,7 @@ namespace LoadBalancer
             {
                 if (_taskServer.Tasks.Count > 0 && _agentServer.Agents.Count > 0)
                 {
-                    if (currentId < _agentServer.Agents.Count) currentId = 0;
+                    if (currentId >= _agentServer.Agents.Count) currentId = 0;
                     _agentServer.Agents[currentId++].AddTask(_taskServer.Tasks.Dequeue(), task => _taskServer.SendResult(task));
                 }
                 else Thread.Sleep(Delay);

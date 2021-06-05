@@ -64,7 +64,7 @@ namespace TaskGenerator
                 if (now != null && task.Id.Equals(now.Id))
                 {
                     MainDataGrid.Rows[i].Cells[1].Value = "Completed";
-                    MainDataGrid.Rows[i].Cells[2].Value = task.Result.ToString();
+                    MainDataGrid.Rows[i].Cells[2].Value = task.Result;
                     MainDataGrid.Rows[i].Tag = task;
                 }
             }
@@ -82,12 +82,11 @@ namespace TaskGenerator
         private void GetResults()
         {
             byte[] buffer = new byte[1024 * 1024];
-            while (true)
+            while (_ServerSocket.Connected)
             {
                 // _ServerSocket.Receive(buffer, 4, SocketFlags.None);
                 // int size = BitConverter.ToInt32(buffer, 0);
                 int size = _ServerSocket.Receive(buffer, SocketFlags.None);
-                MessageBox.Show(size.ToString());
                 Task recievedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, size));
                 UpdateTask(recievedTask);
             }

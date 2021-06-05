@@ -24,19 +24,18 @@ namespace LoadBalancer
             set;
         }
 
-        public string[] Arguments
+        public string Arguments
         {
             get;
             set;
         }
 
-        public object Options
+        public int ExitCode
         {
             get;
             set;
         }
-        
-        public object Result
+        public string Result
         {
             get;
             set;

@@ -36,21 +36,22 @@ namespace LoadBalancer
             _connectionSocket.Send(JsonSerializer.SerializeToUtf8Bytes(task));
             Console.WriteLine("Agent " + AgentId + " added task " + task.Id);
         }
-        private byte[] GetPrefix(byte[] buffer, int count)
-        {
-            byte[] result = new byte[count];
-            Array.Copy(buffer, result, count);
-            return result;
-        }
 
         private void ResultListener()
         {
             byte[] buffer = new byte[_bufferSize];
-            while (_connectionSocket.Connected)
+            try
             {
-                int n = _connectionSocket.Receive(buffer);
-                Task completedTask = JsonSerializer.Deserialize<Task>(GetPrefix(buffer, n));
-                Tasks[completedTask.Id].Item2(completedTask);
+                while (_connectionSocket.Connected)
+                {
+                    int n = _connectionSocket.Receive(buffer);
+                    Task completedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, n));
+                    Tasks[completedTask.Id].Item2(completedTask);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
             }
         }
         

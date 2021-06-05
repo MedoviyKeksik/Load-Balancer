@@ -48,7 +48,7 @@ namespace LoadBalancer
             {
                 _agentsSocket.Bind(new IPEndPoint(IPAddress.Any, Port));
                 _agentsSocket.Listen(MaxAgents);
-                Console.WriteLine("Server is listening for agents...");
+                Console.WriteLine("Server is listening for agents on port " + Port + "...");
                 while (!_agentListenerToken.IsCancellationRequested)
                 {
                     var connection = _agentsSocket.Accept();
