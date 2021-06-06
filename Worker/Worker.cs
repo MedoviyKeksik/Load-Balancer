@@ -52,7 +52,8 @@ namespace Worker
                     Console.WriteLine("Send result: " + currentTask.Id);
                     lock (_connectionSocket)
                     {
-                        _connectionSocket.Send(JsonSerializer.SerializeToUtf8Bytes(currentTask));
+                        LoadBalancer.TaskSender.SendTask(currentTask, _connectionSocket);
+                        // _connectionSocket.Send(JsonSerializer.SerializeToUtf8Bytes(currentTask));
                     }
                 }
             }
@@ -70,8 +71,9 @@ namespace Worker
             processingTask.Start();
             while (!_taskProcessingToken.IsCancellationRequested)
             {
-                int n = _connectionSocket.Receive(_buffer);
-                LoadBalancer.Task recievedTask = JsonSerializer.Deserialize<LoadBalancer.Task>(Encoding.UTF8.GetString(GetPrefix(_buffer, n)));
+                LoadBalancer.Task recievedTask = LoadBalancer.TaskSender.RecieveTask(_connectionSocket);
+                // int n = _connectionSocket.Receive(_buffer);
+                // LoadBalancer.Task recievedTask = JsonSerializer.Deserialize<LoadBalancer.Task>(Encoding.UTF8.GetString(GetPrefix(_buffer, n)));
                 Console.WriteLine("Recieved task: " + recievedTask.Id);
                 lock (queue)
                 {

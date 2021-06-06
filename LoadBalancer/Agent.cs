@@ -33,7 +33,8 @@ namespace LoadBalancer
         public void AddTask(Task task, Callback callback)
         {
             Tasks.Add(task.Id, new Tuple<Task, Callback>(task, callback));
-            _connectionSocket.Send(JsonSerializer.SerializeToUtf8Bytes(task));
+            // _connectionSocket.Send(JsonSerializer.SerializeToUtf8Bytes(task));
+            TaskSender.SendTask(task, _connectionSocket);
             Console.WriteLine("Agent " + AgentId + " added task " + task.Id);
         }
 
@@ -44,8 +45,9 @@ namespace LoadBalancer
             {
                 while (_connectionSocket.Connected)
                 {
-                    int n = _connectionSocket.Receive(buffer);
-                    Task completedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, n));
+                    // int n = _connectionSocket.Receive(buffer);
+                    // Task completedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, n));
+                    Task completedTask = TaskSender.RecieveTask(_connectionSocket);
                     Tasks[completedTask.Id].Item2(completedTask);
                 }
             }

@@ -37,11 +37,13 @@ namespace TaskGenerator
             this.CancelButton = new System.Windows.Forms.Button();
             this.LabelArguments = new System.Windows.Forms.Label();
             this.ArgumentsTextBox = new System.Windows.Forms.TextBox();
+            this.CountLabel = new System.Windows.Forms.Label();
+            this.CountTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // CommandTextBox
             // 
-            this.CommandTextBox.Location = new System.Drawing.Point(12, 33);
+            this.CommandTextBox.Location = new System.Drawing.Point(12, 27);
             this.CommandTextBox.Name = "CommandTextBox";
             this.CommandTextBox.Size = new System.Drawing.Size(209, 20);
             this.CommandTextBox.TabIndex = 0;
@@ -50,7 +52,7 @@ namespace TaskGenerator
             // 
             this.LabelCommand.Location = new System.Drawing.Point(12, 9);
             this.LabelCommand.Name = "LabelCommand";
-            this.LabelCommand.Size = new System.Drawing.Size(100, 21);
+            this.LabelCommand.Size = new System.Drawing.Size(100, 15);
             this.LabelCommand.TabIndex = 1;
             this.LabelCommand.Text = "Command:";
             // 
@@ -76,24 +78,41 @@ namespace TaskGenerator
             // 
             // LabelArguments
             // 
-            this.LabelArguments.Location = new System.Drawing.Point(15, 71);
+            this.LabelArguments.Location = new System.Drawing.Point(12, 59);
             this.LabelArguments.Name = "LabelArguments";
-            this.LabelArguments.Size = new System.Drawing.Size(100, 23);
+            this.LabelArguments.Size = new System.Drawing.Size(100, 13);
             this.LabelArguments.TabIndex = 4;
             this.LabelArguments.Text = "Arguments:";
             // 
             // ArgumentsTextBox
             // 
-            this.ArgumentsTextBox.Location = new System.Drawing.Point(12, 97);
+            this.ArgumentsTextBox.Location = new System.Drawing.Point(12, 75);
             this.ArgumentsTextBox.Name = "ArgumentsTextBox";
             this.ArgumentsTextBox.Size = new System.Drawing.Size(209, 20);
-            this.ArgumentsTextBox.TabIndex = 5;
+            this.ArgumentsTextBox.TabIndex = 1;
+            // 
+            // CountLabel
+            // 
+            this.CountLabel.Location = new System.Drawing.Point(12, 111);
+            this.CountLabel.Name = "CountLabel";
+            this.CountLabel.Size = new System.Drawing.Size(100, 13);
+            this.CountLabel.TabIndex = 4;
+            this.CountLabel.Text = "Count:";
+            // 
+            // CountTextBox
+            // 
+            this.CountTextBox.Location = new System.Drawing.Point(12, 127);
+            this.CountTextBox.Name = "CountTextBox";
+            this.CountTextBox.Size = new System.Drawing.Size(209, 20);
+            this.CountTextBox.TabIndex = 1;
             // 
             // TaskForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(233, 370);
+            this.Controls.Add(this.CountTextBox);
+            this.Controls.Add(this.CountLabel);
             this.Controls.Add(this.ArgumentsTextBox);
             this.Controls.Add(this.LabelArguments);
             this.Controls.Add(this.CancelButton);
@@ -115,6 +134,8 @@ namespace TaskGenerator
         private System.Windows.Forms.Button OkButton;
 
         private System.Windows.Forms.TextBox CommandTextBox;
+        private System.Windows.Forms.TextBox CountTextBox;
+        private System.Windows.Forms.Label CountLabel;
 
         #endregion
     }

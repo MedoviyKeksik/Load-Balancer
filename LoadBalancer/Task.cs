@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
 
 namespace LoadBalancer
 {
@@ -41,6 +44,28 @@ namespace LoadBalancer
             set;
         }
     }
+
+    public static class TaskSender
+    {
+        public static Task RecieveTask(Socket socket)
+        {
+            byte[] sizeBuffer = new byte[4];
+            socket.Receive(sizeBuffer, 0, 4, SocketFlags.None);
+            int size = BitConverter.ToInt32(sizeBuffer, 0);
+            byte[] taskBuffer = new byte[size];
+            socket.Receive(taskBuffer, 0, size, SocketFlags.None);
+            return JsonSerializer.Deserialize<Task>(taskBuffer);
+        }
+
+        public static void SendTask(Task task, Socket socket)
+        {
+            byte[] taskBuffer = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(task));
+            byte[] sizeBuffer = BitConverter.GetBytes(taskBuffer.Length);;
+            socket.Send(sizeBuffer);
+            socket.Send(taskBuffer);
+        }
+    }
+    
     public class TaskComparer : IComparer<Task>
     {
         public int Compare(Task x, Task y)

@@ -13,6 +13,13 @@ namespace TaskGenerator
             InitializeComponent();
         }
 
+        public DialogResult ShowForm()
+        {
+            IpTextBox.Text = "";
+            PortTextBox.Text = "";
+            return ShowDialog();
+        }
+
         private void ButtonOk_Click(object sender, EventArgs e)
         {
             ServerEndPoint = new IPEndPoint(IPAddress.Parse(IpTextBox.Text), Int32.Parse(PortTextBox.Text));

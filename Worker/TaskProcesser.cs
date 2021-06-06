@@ -49,7 +49,7 @@ namespace Worker
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.WorkingDirectory = executeFolder;
                 process.Start();
-                process.WaitForExit();
+                process.WaitForExit(WaitMilliseconds);
                 StreamReader resultStream;
                 if (config.OutputFile == null)
                 {

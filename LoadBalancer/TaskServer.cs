@@ -55,8 +55,9 @@ namespace LoadBalancer
             byte[] buffer = new byte[BufferSize];
             while (true)
             {
-                int recieved = ((Socket) socket).Receive(buffer);
-                Task recievedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, recieved));
+                // int recieved = ((Socket) socket).Receive(buffer);
+                // Task recievedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, recieved));
+                Task recievedTask = TaskSender.RecieveTask((Socket) socket);
                 Console.WriteLine("Recieved task: " + recievedTask.Id);
                 PendingTasks.Add(recievedTask.Id, (Socket) socket);
                 lock (Tasks)
@@ -69,7 +70,7 @@ namespace LoadBalancer
         public void SendResult(Task task)
         {
             Socket client = PendingTasks[task.Id];
-            client.Send(JsonSerializer.SerializeToUtf8Bytes(task));
+            TaskSender.SendTask(task, client);
             Console.WriteLine("Send result to " + client.RemoteEndPoint + " of " + task.Id);
         }
         public void Start()
