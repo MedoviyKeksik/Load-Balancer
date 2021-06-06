@@ -47,21 +47,23 @@ namespace LoadBalancer
 
     public static class TaskSender
     {
+        public static byte[] RecieveBytes(Socket socket, int cnt)
+        {
+            byte[] result = new byte[cnt];
+            int remaining = cnt;
+            while (remaining > 0)
+            {
+                int now = socket.Receive(result, cnt - remaining, remaining, SocketFlags.None);
+                remaining -= now;
+            }
+            return result;
+        }
         public static Task RecieveTask(Socket socket)
         {
-            byte[] taskBuffer;
-            byte[] sizeBuffer = new byte[4];
-            socket.Receive(sizeBuffer, 0, 4, SocketFlags.Peek);
+            byte[] sizeBuffer = RecieveBytes(socket, 4);
             int size = BitConverter.ToInt32(sizeBuffer, 0);
-            taskBuffer = new byte[size + 4];
-            int remainngSize = size + 4, offset = 0;
-            while (remainngSize > 0)
-            {
-                int n = socket.Receive(taskBuffer, offset, remainngSize, SocketFlags.None);
-                remainngSize -= n;
-                offset += n;
-            }
-            Task recievedTask = JsonSerializer.Deserialize<Task>(Encoding.UTF8.GetString(taskBuffer, 4, size));
+            byte[] taskBuffer = RecieveBytes(socket, size);
+            Task recievedTask = JsonSerializer.Deserialize<Task>(taskBuffer);
             return recievedTask;
         }
 
