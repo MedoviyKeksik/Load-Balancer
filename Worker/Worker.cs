@@ -51,7 +51,16 @@ namespace Worker
                     Console.WriteLine("Send result: " + currentTask.Id);
                     lock (_connectionSocket)
                     {
-                        LoadBalancer.TaskSender.SendTask(currentTask, _connectionSocket);
+                        try
+                        {
+                            LoadBalancer.TaskSender.SendTask(currentTask, _connectionSocket);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine("Shutting down");
+                            _taskProcessingTokenSource.Cancel();
+                        }
                     }
                 }
             }
@@ -61,16 +70,25 @@ namespace Worker
         {
             System.Threading.Tasks.Task processingTask = new System.Threading.Tasks.Task(TaskProcessing, callback);
             processingTask.Start();
-            while (!_taskProcessingToken.IsCancellationRequested)
+            try
             {
-                LoadBalancer.Task recievedTask = LoadBalancer.TaskSender.RecieveTask(_connectionSocket);
-                Console.WriteLine("Recieved task: " + recievedTask.Id);
-                lock (queue)
+                while (!_taskProcessingToken.IsCancellationRequested)
                 {
-                    queue.Add(recievedTask);
+                    LoadBalancer.Task recievedTask = LoadBalancer.TaskSender.RecieveTask(_connectionSocket);
+                    Console.WriteLine("Recieved task: " + recievedTask.Id);
+                    lock (queue)
+                    {
+                        queue.Add(recievedTask);
+                    }
                 }
             }
-
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Shutting down");
+                _taskProcessingTokenSource.Cancel();
+                processingTask.Wait();
+            }
         }
     }
 }

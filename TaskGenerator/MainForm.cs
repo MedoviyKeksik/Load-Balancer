@@ -33,8 +33,7 @@ namespace TaskGenerator
             _taskForm = new TaskForm();
             _tasks = new List<Task>();
             _serverForm = new ServerForm();
-            _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
+            
             SetupDataGridView();
 
             Text = HeaderText + " - [Disconnected]";
@@ -43,7 +42,7 @@ namespace TaskGenerator
         private void SetupDataGridView()
         {
             MainDataGrid.ColumnCount = 3;
-            MainDataGrid.Columns[0].Name = "Id";
+            MainDataGrid.Columns[0].Name = "Name";
             MainDataGrid.Columns[1].Name = "Status";
             MainDataGrid.Columns[2].Name = "Result";
         }
@@ -75,7 +74,7 @@ namespace TaskGenerator
         }
         private void AddtaskButton_Click(object sender, EventArgs e)
         {
-            if (!_serverSocket.Connected)
+            if (_serverSocket == null)
             {
                 MessageBox.Show("First connect to the server", "Caution");
             } else if (_taskForm.ShowForm() == DialogResult.OK)
@@ -89,10 +88,18 @@ namespace TaskGenerator
         private void GetResults()
         {
             byte[] buffer = new byte[1024 * 1024];
-            while (_serverSocket.Connected)
+            try
             {
-                Task recievedTask = TaskSender.RecieveTask(_serverSocket);
-                UpdateTask(recievedTask);
+                while (_serverSocket.Connected)
+                {
+                    Task recievedTask = TaskSender.RecieveTask(_serverSocket);
+                    UpdateTask(recievedTask);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error!");
+                Text = HeaderText + " - [Disconnected]";
             }
         }
 
@@ -100,16 +107,24 @@ namespace TaskGenerator
         {
             if (_serverForm.ShowForm() == DialogResult.OK)
             {
-                _serverSocket.Connect(_serverForm.ServerEndPoint);
-                Text = HeaderText + " - [" + _serverForm.ServerEndPoint + "]";
-                _resultsListener = new System.Threading.Tasks.Task(GetResults);
-                _resultsListener.Start();
+                try
+                {
+                    _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    _serverSocket.Connect(_serverForm.ServerEndPoint);
+                    Text = HeaderText + " - [" + _serverForm.ServerEndPoint + "]";
+                    _resultsListener = new System.Threading.Tasks.Task(GetResults);
+                    _resultsListener.Start();
+                }
+                catch (Exception error)
+                {
+                    MessageBox.Show(error.Message, "Error!");
+                }
             }
         }
 
         private void StressTestButton_Click(object sender, EventArgs e)
         {
-            if (!_serverSocket.Connected)
+            if (_serverSocket == null)
             {
                 MessageBox.Show("First connect to the server", "Caution");
             } else if (_taskForm.ShowForm(true) == DialogResult.OK)

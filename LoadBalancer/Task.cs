@@ -49,20 +49,36 @@ namespace LoadBalancer
     {
         public static Task RecieveTask(Socket socket)
         {
+            byte[] taskBuffer;
             byte[] sizeBuffer = new byte[4];
-            socket.Receive(sizeBuffer, 0, 4, SocketFlags.None);
+            socket.Receive(sizeBuffer, 0, 4, SocketFlags.Peek);
             int size = BitConverter.ToInt32(sizeBuffer, 0);
-            byte[] taskBuffer = new byte[size];
-            socket.Receive(taskBuffer, 0, size, SocketFlags.None);
-            return JsonSerializer.Deserialize<Task>(taskBuffer);
+            taskBuffer = new byte[size + 4];
+            int n = socket.Receive(taskBuffer, 0, size + 4, SocketFlags.None);
+            if (n < size + 4)
+            {
+                throw new Exception("EROROROROOROROR! (ХУЙ)");
+            }
+            Task recievedTask = null;
+            try
+            {
+                recievedTask = JsonSerializer.Deserialize<Task>(Encoding.UTF8.GetString(taskBuffer, 4, size));
+            }
+            catch (Exception e)
+            {
+            }
+
+            return recievedTask;
         }
 
         public static void SendTask(Task task, Socket socket)
         {
             byte[] taskBuffer = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(task));
-            byte[] sizeBuffer = BitConverter.GetBytes(taskBuffer.Length);;
-            socket.Send(sizeBuffer);
-            socket.Send(taskBuffer);
+            byte[] sizeBuffer = BitConverter.GetBytes(taskBuffer.Length);
+            byte[] resultBytes = new byte[taskBuffer.Length + sizeBuffer.Length];
+            sizeBuffer.CopyTo(resultBytes, 0);
+            taskBuffer.CopyTo(resultBytes, sizeBuffer.Length);
+            socket.Send(resultBytes, SocketFlags.None);
         }
     }
     

@@ -19,7 +19,7 @@ namespace LoadBalancer
         private CancellationToken _taskListenerToken;
 
         private Socket _taskListenerSocket;
-        public Queue<Task> Tasks;
+        public SortedSet<Task> Tasks;
         private Dictionary<Guid, Socket> PendingTasks;
         
         public TaskServer(int port = 8080, int maxConnections = 4)
@@ -29,7 +29,7 @@ namespace LoadBalancer
             BufferSize = 1024 * 1024;
             _taskListenerTokenSource = new CancellationTokenSource();
             _taskListenerToken = _taskListenerTokenSource.Token;    
-            Tasks = new Queue<Task>();
+            Tasks = new SortedSet<Task>(new TaskComparer());
             PendingTasks = new Dictionary<Guid, Socket>();
         }
 
@@ -53,25 +53,40 @@ namespace LoadBalancer
         private void TaskReciever(object socket)
         {
             byte[] buffer = new byte[BufferSize];
-            while (true)
+            try
             {
-                // int recieved = ((Socket) socket).Receive(buffer);
-                // Task recievedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, recieved));
-                Task recievedTask = TaskSender.RecieveTask((Socket) socket);
-                Console.WriteLine("Recieved task: " + recievedTask.Id);
-                PendingTasks.Add(recievedTask.Id, (Socket) socket);
-                lock (Tasks)
+                while (true)
                 {
-                    Tasks.Enqueue(recievedTask);
+                    Task recievedTask = TaskSender.RecieveTask((Socket) socket);
+                    Console.WriteLine("Recieved task: " + recievedTask.Id);
+                    recievedTask.Time = DateTime.Now;
+                    PendingTasks.Add(recievedTask.Id, (Socket) socket);
+                    lock (Tasks)
+                    {
+                        Tasks.Add(recievedTask);
+                    }
                 }
+                
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
 
         public void SendResult(Task task)
         {
-            Socket client = PendingTasks[task.Id];
-            TaskSender.SendTask(task, client);
-            Console.WriteLine("Send result to " + client.RemoteEndPoint + " of " + task.Id);
+            try
+            {
+                Socket client = PendingTasks[task.Id];
+                PendingTasks.Remove(task.Id);
+                TaskSender.SendTask(task, client);
+                Console.WriteLine("Send result to " + client.RemoteEndPoint + " of " + task.Id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
         public void Start()
         {

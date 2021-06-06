@@ -16,6 +16,7 @@ namespace LoadBalancer
             Delay = 30;
             _agentServer = new AgentServer();
             _taskServer = new TaskServer();
+            _agentServer.BackloadTasks = _taskServer.Tasks;
         }
         private void BalanceLoad()
         {
@@ -25,7 +26,15 @@ namespace LoadBalancer
                 if (_taskServer.Tasks.Count > 0 && _agentServer.Agents.Count > 0)
                 {
                     if (currentId >= _agentServer.Agents.Count) currentId = 0;
-                    _agentServer.Agents[currentId++].AddTask(_taskServer.Tasks.Dequeue(), task => _taskServer.SendResult(task));
+                    while (_agentServer.Agents.Count > 0 && !_agentServer.Agents[currentId].IsAlive)
+                    {
+                        _agentServer.Agents.Remove(_agentServer.Agents[currentId]);
+                        if (currentId >= _agentServer.Agents.Count) currentId = 0;
+                    }
+                    if (currentId >= _agentServer.Agents.Count) continue;
+                    Task currentTask = _taskServer.Tasks.Min;
+                    _taskServer.Tasks.Remove(_taskServer.Tasks.Min);
+                    _agentServer.Agents[currentId++].AddTask(currentTask, task => _taskServer.SendResult(task));
                 }
                 else Thread.Sleep(Delay);
             }

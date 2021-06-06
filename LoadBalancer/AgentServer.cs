@@ -6,25 +6,14 @@ using System.Threading;
 
 namespace LoadBalancer
 {
-    public class AgentShutdownException : Exception
-    {
-        public Agent DeadAgent
-        {
-            get;
-            set;
-        }
-
-        AgentShutdownException(string msg, Agent agent) : base(msg)
-        {
-            DeadAgent = agent;
-        }
-    }
     public class AgentServer
     {
         public int Port { get; set; }
         public int MaxAgents { get; set; }
         public static int BufferSize = 1024 * 1024;
 
+        public SortedSet<Task> BackloadTasks;
+        
         private System.Threading.Tasks.Task _agentServerTask;
         private CancellationTokenSource _agentListenerTokenSource;
         private CancellationToken _agentListenerToken;
@@ -52,16 +41,11 @@ namespace LoadBalancer
                 while (!_agentListenerToken.IsCancellationRequested)
                 {
                     var connection = _agentsSocket.Accept();
-                    Agent currentAgent = new Agent(connection);
+                    Agent currentAgent = new Agent(connection, ref BackloadTasks);
                     Console.WriteLine("Agent " + currentAgent.AgentId + " connected");
                     Agents.Add(currentAgent);
                 }
             }
-        }
-
-        private void AgentsChecker()
-        {
-            
         }
 
         public void Start()

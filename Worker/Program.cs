@@ -8,8 +8,19 @@ namespace Worker
     {
         static void Main(string[] args)
         {
-            Worker worker = new Worker(IPEndPoint.Parse(args[0]));
-            worker.Run(TaskProcesser.ProcessTask);
+            if (args.Length < 1) Console.WriteLine("Please specify remote host");
+            else
+            {
+                try
+                {
+                    Worker worker = new Worker(IPEndPoint.Parse(args[0]));
+                    worker.Run(TaskProcesser.ProcessTask);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
         }
     }
 }

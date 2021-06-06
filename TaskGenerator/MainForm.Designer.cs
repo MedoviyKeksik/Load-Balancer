@@ -31,7 +31,6 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.AddtaskButton = new System.Windows.Forms.Button();
-            this.CanceltaskButton = new System.Windows.Forms.Button();
             this.MainDataGrid = new System.Windows.Forms.DataGridView();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.serverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,15 +51,6 @@
             this.AddtaskButton.Text = "Add task";
             this.AddtaskButton.UseVisualStyleBackColor = true;
             this.AddtaskButton.Click += new System.EventHandler(this.AddtaskButton_Click);
-            // 
-            // CanceltaskButton
-            // 
-            this.CanceltaskButton.Location = new System.Drawing.Point(6, 85);
-            this.CanceltaskButton.Name = "CanceltaskButton";
-            this.CanceltaskButton.Size = new System.Drawing.Size(159, 35);
-            this.CanceltaskButton.TabIndex = 2;
-            this.CanceltaskButton.Text = "Cancel";
-            this.CanceltaskButton.UseVisualStyleBackColor = true;
             // 
             // MainDataGrid
             // 
@@ -113,7 +103,6 @@
             // 
             this.panel1.Controls.Add(this.StressTestButton);
             this.panel1.Controls.Add(this.AddtaskButton);
-            this.panel1.Controls.Add(this.CanceltaskButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(629, 24);
             this.panel1.Name = "panel1";
@@ -159,7 +148,6 @@
         private System.Windows.Forms.MenuStrip menuStrip;
 
         private System.Windows.Forms.Button AddtaskButton;
-        private System.Windows.Forms.Button CanceltaskButton;
 
         #endregion
     }
