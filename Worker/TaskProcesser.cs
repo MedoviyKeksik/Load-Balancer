@@ -23,13 +23,6 @@ namespace Worker
 
             return buffer;
         }
-        public static SupportedCommands GetSupportedCommands()
-        {
-            SupportedCommands result = new SupportedCommands();
-            var tmp = Directory.GetDirectories("Methods");
-            result.Commands = Array.ConvertAll(tmp, new Converter<string, string>(s => s.Split("\\")[1]));
-            return result;
-        }
 
         public static void ProcessTask(ref LoadBalancer.Task task)
         {
