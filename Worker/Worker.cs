@@ -12,7 +12,7 @@ namespace Worker
     public class Worker
     {
         protected SortedSet<LoadBalancer.Task> queue;
-        public delegate object TaskHandler(LoadBalancer.Task task);
+        public delegate void TaskHandler(ref LoadBalancer.Task task);
         private Socket _connectionSocket;
         private CancellationTokenSource _taskProcessingTokenSource;
         private CancellationToken _taskProcessingToken;
@@ -40,7 +40,6 @@ namespace Worker
 
         private void TaskProcessing(object callback)
         {
-            TaskHandler callbackFunction = callback as TaskHandler;
             while (!_taskProcessingToken.IsCancellationRequested)
             {
                 if (queue.Count == 0) Thread.Sleep(_delay);
@@ -48,23 +47,16 @@ namespace Worker
                 {
                     LoadBalancer.Task currentTask = queue.Min;
                     queue.Remove(currentTask);
-                    TaskProcesser.ProcessTask(ref currentTask);
+                    ((TaskHandler) callback)(ref currentTask);
                     Console.WriteLine("Send result: " + currentTask.Id);
                     lock (_connectionSocket)
                     {
                         LoadBalancer.TaskSender.SendTask(currentTask, _connectionSocket);
-                        // _connectionSocket.Send(JsonSerializer.SerializeToUtf8Bytes(currentTask));
                     }
                 }
             }
         }
 
-        private byte[] GetPrefix(byte[] buffer, int count)
-        {
-            byte[] result = new byte[count];
-            Array.Copy(buffer, result, count);
-            return result;
-        }
         public void Run(TaskHandler callback)
         {
             System.Threading.Tasks.Task processingTask = new System.Threading.Tasks.Task(TaskProcessing, callback);
@@ -72,8 +64,6 @@ namespace Worker
             while (!_taskProcessingToken.IsCancellationRequested)
             {
                 LoadBalancer.Task recievedTask = LoadBalancer.TaskSender.RecieveTask(_connectionSocket);
-                // int n = _connectionSocket.Receive(_buffer);
-                // LoadBalancer.Task recievedTask = JsonSerializer.Deserialize<LoadBalancer.Task>(Encoding.UTF8.GetString(GetPrefix(_buffer, n)));
                 Console.WriteLine("Recieved task: " + recievedTask.Id);
                 lock (queue)
                 {

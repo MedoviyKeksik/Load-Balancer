@@ -83,7 +83,6 @@ namespace TaskGenerator
                 _tasks.Add(_taskForm.Task);
                 AppendTask(_taskForm.Task);
                 TaskSender.SendTask(_taskForm.Task, _serverSocket);
-                // _ServerSocket.Send(JsonSerializer.SerializeToUtf8Bytes(_taskForm.Task));
             }
         }
 
@@ -92,8 +91,6 @@ namespace TaskGenerator
             byte[] buffer = new byte[1024 * 1024];
             while (_serverSocket.Connected)
             {
-                // int size = _serverSocket.Receive(buffer, SocketFlags.None);
-                // Task recievedTask = JsonSerializer.Deserialize<Task>(ArrayProcessing.GetPrefix(buffer, size));
                 Task recievedTask = TaskSender.RecieveTask(_serverSocket);
                 UpdateTask(recievedTask);
             }
@@ -125,7 +122,6 @@ namespace TaskGenerator
                     _tasks.Add(tmp);
                     AppendTask(tmp);
                     TaskSender.SendTask(tmp, _serverSocket);
-                    // _serverSocket.Send(JsonSerializer.SerializeToUtf8Bytes(tmp));
                 }
             }
         }

@@ -69,7 +69,7 @@
             this.MainDataGrid.AllowUserToResizeRows = false;
             this.MainDataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.MainDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.MainDataGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainDataGrid.Dock = System.Windows.Forms.DockStyle.Left;
             this.MainDataGrid.Location = new System.Drawing.Point(0, 24);
             this.MainDataGrid.Name = "MainDataGrid";
             this.MainDataGrid.ReadOnly = true;
@@ -82,7 +82,8 @@
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.MainDataGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.MainDataGrid.RowTemplate.ReadOnly = true;
-            this.MainDataGrid.Size = new System.Drawing.Size(800, 426);
+            this.MainDataGrid.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.MainDataGrid.Size = new System.Drawing.Size(629, 426);
             this.MainDataGrid.TabIndex = 4;
             // 
             // menuStrip
