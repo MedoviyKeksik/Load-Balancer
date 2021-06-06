@@ -54,20 +54,14 @@ namespace LoadBalancer
             socket.Receive(sizeBuffer, 0, 4, SocketFlags.Peek);
             int size = BitConverter.ToInt32(sizeBuffer, 0);
             taskBuffer = new byte[size + 4];
-            int n = socket.Receive(taskBuffer, 0, size + 4, SocketFlags.None);
-            if (n < size + 4)
+            int remainngSize = size + 4, offset = 0;
+            while (remainngSize > 0)
             {
-                throw new Exception("EROROROROOROROR! (ХУЙ)");
+                int n = socket.Receive(taskBuffer, offset, remainngSize, SocketFlags.None);
+                remainngSize -= n;
+                offset += n;
             }
-            Task recievedTask = null;
-            try
-            {
-                recievedTask = JsonSerializer.Deserialize<Task>(Encoding.UTF8.GetString(taskBuffer, 4, size));
-            }
-            catch (Exception e)
-            {
-            }
-
+            Task recievedTask = JsonSerializer.Deserialize<Task>(Encoding.UTF8.GetString(taskBuffer, 4, size));
             return recievedTask;
         }
 
